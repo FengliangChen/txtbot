@@ -3,9 +3,12 @@ package txtbot
 import (
 	"bufio"
 	"errors"
+	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -26,17 +29,32 @@ var (
 	re        *regexp.Regexp
 	job       string
 	emailSave = filepath.Join(os.Getenv("HOME"), "Desktop", "draftartwork.txt")
+	cancel    bool /*flag to skip executing bash command "open"*/
+	help      bool /*flag, help*/
 )
 
 func init() {
+	if len(os.Args) == 3 {
+		if len(os.Args[2]) == 6 {
+			job = os.Args[2]
+		}
+	}
 	if len(os.Args) == 2 {
 		if len(os.Args[1]) == 6 {
 			job = os.Args[1]
 		}
 	}
+	flag.BoolVar(&cancel, "c", false, "Cancel Open folder.")
+	flag.BoolVar(&help, "h", false, "Help.")
+	flag.Usage = usage
 }
 
 func Run() {
+	flag.Parse()
+	if help {
+		flag.Usage()
+		return
+	}
 
 	if !TestConnect() {
 		log.Println("Connection Errors, Please check if the server is connected at: " + dfpath)
@@ -99,6 +117,14 @@ func Run() {
 
 	log.Println("TxtSave", "------>", emailSave)
 
+	if !cancel {
+		cmd := exec.Command("open", DFjobpath)
+		err := cmd.Run()
+		if err != nil {
+			log.Println(err)
+		}
+	}
+	return
 }
 
 func TestConnect() bool {
@@ -118,7 +144,6 @@ func Exists(path string) bool {
 }
 
 func SearchJob(path string) (string, error) {
-
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Println(err)
@@ -236,4 +261,16 @@ func WriteEmail(path string, content *string) {
 	}
 	emailWriter.Flush()
 	return
+}
+
+func usage() {
+	fmt.Fprintf(os.Stderr, `txtbot version: txtbot/1.10.0
+Usage: txtbot [-c job#]
+
+Contact: bafelem@gmail.com
+Project address: https://github.com/FengliangChen/txtbot
+
+Options:
+`)
+	flag.PrintDefaults()
 }
