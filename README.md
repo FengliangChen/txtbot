@@ -42,6 +42,18 @@ txtbot -c
 txtbot -c 190707
 ```
 
+## 取消PF
+
+对未开始和进行中都没有放有单号的，默认运行停止，可用-t取消停止。
+
+```bash
+txtbot -t 190707
+```
+或
+```bash
+txtbot -c -t 190707
+```
+
 ## 帮助：
 ```bash
 txtbot -h
