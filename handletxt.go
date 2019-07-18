@@ -18,7 +18,7 @@ type Body struct {
 type AllBody []*Body
 
 func Head(n int) string {
-	a := "Hi Supplier:\n\n"
+	a := "Hi Supplier,\n\n"
 	b := "The following "
 	c := " files are for your approval:\n\n"
 	if n == 1 {
