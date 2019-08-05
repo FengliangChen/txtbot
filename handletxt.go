@@ -103,3 +103,30 @@ func ConstructPDFName(DFjobpath string) (*AllBody, error) {
 
 	return &allbody, nil
 }
+
+func TitleSplit(path string) (string, string, string) {
+	base := filepath.Base(path)
+	tjob := "X"
+	tcode := "X"
+	if len(base) > 10 {
+		base = strings.TrimSpace(base)
+		splited := strings.Split(base, "_")
+		if len(splited) == 2 {
+			tjob = splited[0]
+			tcode = splited[1]
+		}
+	}
+	if len(brand) > 4 {
+		brand = strings.ToUpper(brand)
+		brand = strings.TrimSpace(brand)
+		splitedbrand := strings.Split(brand, "/")
+		if len(splitedbrand) == 2 {
+			brand = splitedbrand[0]
+		} else {
+			brand = "X"
+		}
+	} else {
+		brand = "X"
+	}
+	return brand, tcode, tjob
+}

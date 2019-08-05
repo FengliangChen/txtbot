@@ -2,6 +2,7 @@ package txtbot
 
 import (
 	"bufio"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -16,9 +17,11 @@ import (
 )
 
 const (
-	dfpath = "/Volumes/datavolumn_bmkserver_Pub"
-	wks    = "/Volumes/datavolumn_bmkserver_Pub/新做稿/未开始"
-	jxz    = "/Volumes/datavolumn_bmkserver_Pub/新做稿/进行中"
+	dfpath      = "/Volumes/datavolumn_bmkserver_Pub"
+	wks         = "/Volumes/datavolumn_bmkserver_Pub/新做稿/未开始"
+	jxz         = "/Volumes/datavolumn_bmkserver_Pub/新做稿/进行中"
+	DEFAULTSIZE = 64 // Json, Estimated 2000 client if consider 30 bit per client.
+	jsonPath    = "/Users/imac-6/Desktop/DATAPROCESS/txt.json"
 )
 
 var (
@@ -28,6 +31,7 @@ var (
 	month     = now.Format("200601")
 	re        *regexp.Regexp
 	job       string
+	brand     string
 	emailSave = filepath.Join(os.Getenv("HOME"), "Desktop", "draftartwork.txt")
 	cancel    bool /*flag to skip executing bash command "open"*/
 	help      bool /*flag, help*/
@@ -123,6 +127,12 @@ func Run() {
 	}
 
 	emailTxt := CombineAll(allbody, &tail)
+
+	PHQtitle, err := PHQtitle(DFjobpath)
+	if err != nil {
+		log.Println(err)
+	}
+	*emailTxt = PHQtitle + "\n\n" + *emailTxt
 	WriteEmail(emailSave, emailTxt)
 
 	log.Println("TxtSave", "------>", emailSave)
@@ -286,4 +296,34 @@ Project address: https://github.com/FengliangChen/txtbot
 Options:
 `)
 	flag.PrintDefaults()
+}
+
+func PHQtitle(jobpath string) (string, error) {
+	buf := make([]byte, DEFAULTSIZE*1024)
+	file, err := os.Open(jsonPath)
+	if err != nil {
+		log.Println("open json err")
+		return "", err
+	}
+	defer file.Close()
+	n, _ := file.Read(buf)
+	if n == DEFAULTSIZE*1024 {
+		return "", errors.New("MaxSize")
+	}
+
+	client := []map[string]string{}
+	clientMap := map[string]string{}
+	err = json.Unmarshal(buf[0:n], &client)
+	if err != nil {
+		return "", errors.New("jsonMarshalError")
+	}
+
+	for _, clientdata := range client {
+		for code, fullname := range clientdata {
+			clientMap[code] = fullname
+		}
+	}
+	tbrand, tcode, tjob := TitleSplit(jobpath)
+
+	return clientMap[tbrand] + " / " + clientMap[tcode] + " / " + tjob, nil
 }
