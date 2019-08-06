@@ -22,6 +22,10 @@ Mac打开终端：
 $(curl https://raw.githubusercontent.com/FengliangChen/py/master/release/txtbot -o /usr/local/bin/txtbot) && cd /usr/local/bin && chmod +x txtbot && cd $HOME 
 
 ```
+安装字典：
+```bash
+mkdir $HOME/Documents/txtbot && $(curl https://raw.githubusercontent.com/FengliangChen/py/master/release/clientcode.json -o $HOME/Documents/txtbot/clientcode.json)
+```
 
 ## 运行：
 默认 生成文字 + 打开文件夹：

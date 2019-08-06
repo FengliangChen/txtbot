@@ -21,7 +21,6 @@ const (
 	wks         = "/Volumes/datavolumn_bmkserver_Pub/新做稿/未开始"
 	jxz         = "/Volumes/datavolumn_bmkserver_Pub/新做稿/进行中"
 	DEFAULTSIZE = 64 // Json, Estimated 2000 client if consider 30 bit per client.
-	jsonPath    = "/Users/imac-6/Desktop/DATAPROCESS/txt.json"
 )
 
 var (
@@ -33,6 +32,7 @@ var (
 	job       string
 	brand     string
 	emailSave = filepath.Join(os.Getenv("HOME"), "Desktop", "draftartwork.txt")
+	jsonPath  = filepath.Join(os.Getenv("HOME"), "Documents", "txtbot", "clientcode.json")
 	cancel    bool /*flag to skip executing bash command "open"*/
 	help      bool /*flag, help*/
 	trimTail  bool /*trim the tail*/
@@ -56,7 +56,7 @@ func init() {
 	}
 	flag.BoolVar(&cancel, "c", false, "Cancel Open folder.")
 	flag.BoolVar(&help, "h", false, "Help.")
-	flag.BoolVar(&trimTail, "t", false, "Ignore PF mode, txt with out PF info.")
+	flag.BoolVar(&trimTail, "t", false, "Ignore PF mode, txt with out PF info, as well as no PHQ title.")
 	flag.Usage = usage
 }
 
@@ -132,7 +132,9 @@ func Run() {
 	if err != nil {
 		log.Println(err)
 	}
-	*emailTxt = PHQtitle + "\n\n" + *emailTxt
+	if !trimTail {
+		*emailTxt = PHQtitle + "\n\n" + *emailTxt
+	}
 	WriteEmail(emailSave, emailTxt)
 
 	log.Println("TxtSave", "------>", emailSave)
@@ -287,11 +289,12 @@ func WriteEmail(path string, content *string) {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, `txtbot version: txtbot/1.10.1
+	fmt.Fprintf(os.Stderr, `txtbot version: txtbot/1.10.2
 Usage: txtbot [-c job#]
 
 Contact: bafelem@gmail.com
 Project address: https://github.com/FengliangChen/txtbot
+2019 SMC Tech
 
 Options:
 `)
