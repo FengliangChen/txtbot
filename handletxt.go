@@ -123,7 +123,12 @@ func TitleSplit(path string) (string, string, string) {
 		if len(splitedbrand) == 2 {
 			brand = splitedbrand[0]
 		} else {
-			brand = "X"
+			splitedbrand = strings.Split(brand, "／")
+			if len(splitedbrand) == 2 {
+				brand = splitedbrand[0]
+			} else {
+				brand = "X"
+			}
 		}
 	} else {
 		brand = "X"
