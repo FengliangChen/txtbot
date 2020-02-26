@@ -116,22 +116,19 @@ func TitleSplit(path string) (string, string, string) {
 			tcode = splited[1]
 		}
 	}
+
+	var separators = [...]string{"/", "-", "／"}
 	if len(brand) > 4 {
 		brand = strings.ToUpper(brand)
 		brand = strings.TrimSpace(brand)
-		splitedbrand := strings.Split(brand, "/")
-		if len(splitedbrand) == 2 {
-			brand = splitedbrand[0]
-		} else {
-			splitedbrand = strings.Split(brand, "／")
-			if len(splitedbrand) == 2 {
-				brand = splitedbrand[0]
-			} else {
-				brand = "X"
-			}
-		}
-	} else {
-		brand = "X"
-	}
+		before_sep := brand
+		for _, separator := range separators {
+			splitedbrand := strings.Split(brand, separator)
+			if len(splitedbrand) == 2 { brand = splitedbrand[0] ; break}
+		} 
+
+		if before_sep == brand { brand = "X" }
+	} else { brand = "X" }
+
 	return brand, tcode, tjob
 }
