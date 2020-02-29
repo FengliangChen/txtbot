@@ -20,9 +20,9 @@ type AllBody []*Body
 func Head(n int) string {
 	a := "Hi Supplier,\n\n"
 	b := "The following "
-	c := " files are for your approval:\n\n"
+	c := " DRAFT ARTWORK files are for your FIRST approval:\n\n"
 	if n == 1 {
-		return a + "The following file is for your approval:\n\n"
+		return a + "The following DRAFT ARTWORK file is for your FIRST approval:\n\n"
 	} else {
 		return a + b + strconv.Itoa(n) + c
 	}
